@@ -7,4 +7,4 @@ build
 # Ignore Intellij IDEA files
 out
 .idea
-parley.iml
+*.iml
