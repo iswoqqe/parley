@@ -3,29 +3,44 @@
  */
 package parley;
 
-import javax.swing.*;
+import parley.ecs.actiongen.Movement;
+import parley.ecs.components.Position;
+import parley.ecs.components.RandomActor;
+import parley.ecs.components.Texture;
+import parley.ecs.core.*;
+import parley.ecs.events.Act;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
-    }
+    public static void main(String[] args) throws InterruptedException {
+        ArrayList<Entity> entities = new ArrayList<>();
 
-    private static void createAndShowGUI() {
-        //Create and set up the window.
-        JFrame frame = new JFrame("HelloWorldSwing");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        for (int i = 0; i < 10; ++i) {
+            ArrayList<IComponent> components = new ArrayList<>();
+            components.add(new Position(10, 10));
+            components.add(new Texture('@'));
+            components.add(new RandomActor());
 
-        //Add the ubiquitous "Hello World" label.
-        JLabel label = new JLabel("Hello World");
-        frame.getContentPane().add(label);
+            entities.add(new Entity(components));
+        }
 
-        //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-    }
+        GameState state = new GameState(entities);
+        Movement movement = new Movement();
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-        SwingUtilities.invokeLater(App::createAndShowGUI);
+        UI ui = new UI();
+        ui.update(state);
+
+        while (true) {
+            for (Entity entity : entities) {
+                List<Action> actions = movement.generate(entity);
+                IEvent act = new Act(actions);
+                entity.runEvent(act);
+            }
+
+            ui.update(state);
+            Thread.sleep(100);
+        }
     }
 }
