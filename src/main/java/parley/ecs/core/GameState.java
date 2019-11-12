@@ -1,6 +1,6 @@
 package parley.ecs.core;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +11,7 @@ class GameState implements IGameState {
     private List<IEntity> entities;
 
     GameState() {
+        this.entities = new ArrayList<>();
     }
 
     void add(IEntity entity) {
@@ -18,7 +19,7 @@ class GameState implements IGameState {
     }
 
     @Override
-    public Iterator<IEntity> all() {
-        return entities.iterator();
+    public List<IEntity> all() {
+        return entities;
     }
 }

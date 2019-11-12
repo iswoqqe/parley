@@ -10,5 +10,5 @@ public interface IGameState {
     /**
      * @return an iterator iterating over each entity once
      */
-    Iterator<IEntity> all();
+    Iterable<IEntity> all();
 }
