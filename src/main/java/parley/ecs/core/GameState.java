@@ -1,6 +1,7 @@
 package parley.ecs.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,5 +22,27 @@ class GameState implements IGameState {
     @Override
     public List<IEntity> all() {
         return entities;
+    }
+
+    @Override
+    public Iterable<IEntity> allWithComponents(Class<? extends IComponent>... componentTypes) {
+        List<IEntity> ret = new ArrayList<>();
+
+        for (IEntity entity : entities) {
+            boolean addEntity = true;
+
+            for (Class<? extends IComponent> type : Arrays.asList(componentTypes)) {
+                if (!entity.hasComponent(type)) {
+                    addEntity = false;
+                    break;
+                }
+            }
+
+            if (addEntity) {
+                ret.add(entity);
+            }
+        }
+
+        return ret;
     }
 }

@@ -11,4 +11,6 @@ public interface IGameState {
      * @return an iterator iterating over each entity once
      */
     Iterable<IEntity> all();
+
+    Iterable<IEntity> allWithComponents(Class<? extends IComponent>... componentTypes);
 }
