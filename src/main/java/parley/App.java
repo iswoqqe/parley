@@ -3,29 +3,54 @@
  */
 package parley;
 
-import javax.swing.*;
+import parley.ecs.components.AI;
+import parley.ecs.components.Player;
+import parley.ecs.components.PhysicalObject;
+import parley.ecs.core.Engine;
+import parley.systems.AIMovement;
+import parley.systems.PlayerMovement;
+import parley.systems.UI;
+
 
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
+    public static void main(String[] args) throws InterruptedException {
+        Engine engine = new Engine();
+
+        engine.newEntity()
+                .with(new PhysicalObject('@', 50, 11))
+                .with(new Player())
+                .build();
+
+        engine.newEntity()
+                .with(new PhysicalObject('+', 40, 32))
+                .with(new AI())
+                .build();
+
+        engine.newEntity()
+                .with(new PhysicalObject('-', 40, 32))
+                .with(new AI())
+                .build();
+
+        for (int i = 10; i <= 70; ++i) {
+            engine.newEntity()
+                    .with(new PhysicalObject('#', i, 20))
+                    .build();
+        }
+
+        Inputs.startService();
+        UI.start(engine);
+        runEventLoop(engine);
     }
 
-    private static void createAndShowGUI() {
-        //Create and set up the window.
-        JFrame frame = new JFrame("HelloWorldSwing");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private static void runEventLoop(Engine engine) throws InterruptedException {
+        PlayerMovement movement = new PlayerMovement();
+        AIMovement aiMovement = new AIMovement();
 
-        //Add the ubiquitous "Hello World" label.
-        JLabel label = new JLabel("Hello World");
-        frame.getContentPane().add(label);
+        while (true) {
+            engine.runSystem(movement);
+            engine.runSystem(aiMovement);
 
-        //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-        SwingUtilities.invokeLater(App::createAndShowGUI);
+            Thread.sleep(100);
+        }
     }
 }
