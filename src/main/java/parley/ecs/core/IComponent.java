@@ -1,7 +1,7 @@
 package parley.ecs.core;
 
-import parley.ecs.components.IComponentVisitor;
+import parley.ecs.components.IEvent;
 
 public interface IComponent {
-    void accept(IComponentVisitor event);
+    void accept(IEvent event, IEntity self);
 }

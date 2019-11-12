@@ -1,6 +1,8 @@
 package parley.ecs.core;
 
+import parley.ecs.components.IEvent;
+
 public interface IEntity {
-    <T> T fireEvent(IEvent<T> event);
+    void fireEvent(IEvent event);
     boolean hasComponent(Class<? extends IComponent> type);
 }

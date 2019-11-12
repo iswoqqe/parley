@@ -14,8 +14,10 @@ public class Engine {
      * @brief Run a system on the current game state.
      * @param system the system to run
      */
-    public synchronized void runSystem(ISystem system) {
+    public void runSystem(ISystem system) {
+        synchronized (state) {
             system.run(state);
+        }
     }
 
     /**
@@ -54,7 +56,11 @@ public class Engine {
                 throw new UnsupportedOperationException("build() has already been called in Engine.EntityBuilder");
             }
 
-            state.add(new Entity(components));
+            System.out.println(components);
+
+            synchronized (state) {
+                state.add(new Entity(components));
+            }
 
             state = null;
             components = null;

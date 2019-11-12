@@ -1,5 +1,7 @@
 package parley.ecs.core;
 
+import parley.ecs.components.IEvent;
+
 import java.util.List;
 
 /**
@@ -14,12 +16,10 @@ public class Entity implements IEntity {
     }
 
     @Override
-    public <T> T fireEvent(IEvent<T> event) {
+    public void fireEvent(IEvent event) {
         for (IComponent component : components) {
-            component.accept(event);
+            component.accept(event, this);
         }
-
-        return event.getValue();
     }
 
     @Override
