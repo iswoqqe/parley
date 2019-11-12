@@ -14,8 +14,8 @@ public class Engine {
      * @brief Run a system on the current game state.
      * @param system the system to run
      */
-    public void runSystem(ISystem system) {
-        system.run(state);
+    public synchronized void runSystem(ISystem system) {
+            system.run(state);
     }
 
     /**
