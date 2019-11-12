@@ -14,10 +14,12 @@ public class Entity implements IEntity {
     }
 
     @Override
-    public void fireEvent(IEvent event) {
+    public <T> T fireEvent(IEvent<T> event) {
         for (IComponent component : components) {
             component.accept(event);
         }
+
+        return event.getValue();
     }
 
     @Override
