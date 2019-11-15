@@ -8,6 +8,7 @@ import parley.ecs.components.Tag;
 import parley.ecs.core.Engine;
 import parley.systems.AIMovement;
 import parley.systems.PlayerMovement;
+import parley.systems.UI;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -41,7 +42,6 @@ public class App {
         }
 
         Inputs.startService();
-        UI.start(engine);
         turnQueue.add(playerId);
         turnQueue.add(ai1Id);
         turnQueue.add(ai2Id);
@@ -52,10 +52,13 @@ public class App {
     private static void runEventLoop(Engine engine) throws InterruptedException {
         PlayerMovement playerMovement = new PlayerMovement();
         AIMovement aiMovement = new AIMovement();
+        UI ui = new UI();
 
         LoopState state = LoopState.NORMAL;
 
         while (true) {
+            engine.runSystem(ui);
+
             int acting = turnQueue.peek();
 
             if (state == LoopState.NORMAL) {

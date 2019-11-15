@@ -1,4 +1,4 @@
-package parley;
+package parley.systems;
 
 import asciiPanel.AsciiPanel;
 import parley.ecs.core.*;
@@ -6,30 +6,28 @@ import parley.events.GetPositionQuery;
 import parley.events.GetTextureQuery;
 
 import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class UI extends JFrame implements ISystem {
     public static final int width = 80;
     public static final int height = 43;
+    private char[][] chars;
     private AsciiPanel terminal;
 
-    static void start(Engine engine) {
-        UI uiFrame = new UI();
-
-        new Thread(() -> {
-            while (true) {
-                try {
-                    engine.runSystem(uiFrame);
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    System.out.println("Closing down UI because of exception:\n" + e.getMessage());
-                    return;
-                }
+    private void clear() {
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
+                chars[i][j] = ' ';
             }
-        }).start();
+        }
     }
 
-    private UI() {
-        terminal = new AsciiPanel(width, height);
+    public UI() {
+        this.chars = new char[width][height];
+        clear();
+
+        this.terminal = new AsciiPanel(width, height);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(terminal);
         pack();
         setVisible(true);
@@ -41,7 +39,7 @@ public class UI extends JFrame implements ISystem {
 
     @Override
     public void run(IGameState entities) {
-        terminal.clear();
+        clear();
 
         for (IEntity entity : entities.all()) {
             GetPositionQuery getPositionQuery = new GetPositionQuery();
@@ -56,11 +54,27 @@ public class UI extends JFrame implements ISystem {
                 char texture = getTextureQuery.getTexture();
 
                 if (canDraw(x, y)) {
-                    terminal.write(texture, x, y);
+                    chars[x][y] = texture;
                 }
             }
         }
 
-        terminal.repaint();
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                for (int i = 0; i < width; ++i) {
+                    for (int j = 0; j < height; ++j) {
+                        terminal.write(chars[i][j], i, j);
+                    }
+                }
+
+                terminal.repaint();
+            });
+        } catch (InvocationTargetException e) {
+            System.out.println("Closing down UI because of exception:\n" + e.getMessage());
+            return;
+        } catch (InterruptedException e) {
+            System.out.println("Closing down UI because of exception:\n" + e.getMessage());
+            return;
+        }
     }
 }
