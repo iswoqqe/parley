@@ -1,7 +1,6 @@
 package parley.systems;
 
-import parley.ecs.components.AI;
-import parley.ecs.components.PhysicalObject;
+import parley.ecs.components.Tag;
 import parley.ecs.core.IEntity;
 import parley.ecs.core.IGameState;
 import parley.ecs.core.ISystem;
@@ -20,7 +19,7 @@ public class AIMovement implements ISystem {
 
     @Override
     public void run(IGameState entities) {
-        for (IEntity ai : entities.allWithComponents(AI.class)) {
+        for (IEntity ai : entities.allWithTags(Tag.AI, Tag.Acting)) {
             GetPositionQuery getPositionQuery = new GetPositionQuery();
             ai.fireEvent(getPositionQuery);
 

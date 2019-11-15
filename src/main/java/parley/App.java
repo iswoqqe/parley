@@ -3,54 +3,89 @@
  */
 package parley;
 
-import parley.ecs.components.AI;
-import parley.ecs.components.Player;
 import parley.ecs.components.PhysicalObject;
+import parley.ecs.components.Tag;
 import parley.ecs.core.Engine;
 import parley.systems.AIMovement;
 import parley.systems.PlayerMovement;
 import parley.systems.UI;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 
 public class App {
+    private static Queue<Integer> turnQueue = new ArrayDeque<>();
+
     public static void main(String[] args) throws InterruptedException {
         Engine engine = new Engine();
 
-        engine.newEntity()
-                .with(new PhysicalObject('@', 50, 11))
-                .with(new Player())
+        int playerId = engine.newEntity()
+                .withComponent(new PhysicalObject('@', 50, 11))
+                .withTag(Tag.Player)
                 .build();
 
-        engine.newEntity()
-                .with(new PhysicalObject('+', 40, 32))
-                .with(new AI())
+        int ai1Id = engine.newEntity()
+                .withComponent(new PhysicalObject('+', 40, 32))
+                .withTag(Tag.AI)
                 .build();
 
-        engine.newEntity()
-                .with(new PhysicalObject('-', 40, 32))
-                .with(new AI())
+        int ai2Id = engine.newEntity()
+                .withComponent(new PhysicalObject('-', 40, 32))
+                .withTag(Tag.AI)
                 .build();
 
         for (int i = 10; i <= 70; ++i) {
             engine.newEntity()
-                    .with(new PhysicalObject('#', i, 20))
+                    .withComponent(new PhysicalObject('#', i, 20))
                     .build();
         }
 
         Inputs.startService();
         UI.start(engine);
+        turnQueue.add(playerId);
+        turnQueue.add(ai1Id);
+        turnQueue.add(ai2Id);
+
         runEventLoop(engine);
     }
 
     private static void runEventLoop(Engine engine) throws InterruptedException {
-        PlayerMovement movement = new PlayerMovement();
+        PlayerMovement playerMovement = new PlayerMovement();
         AIMovement aiMovement = new AIMovement();
 
-        while (true) {
-            engine.runSystem(movement);
-            engine.runSystem(aiMovement);
+        LoopState state = LoopState.NORMAL;
 
-            Thread.sleep(100);
+        while (true) {
+            int acting = turnQueue.peek();
+
+            if (state == LoopState.NORMAL) {
+                acting = turnQueue.poll();
+                turnQueue.add(acting);
+
+                engine.addTag(acting, Tag.Acting);
+
+                if (engine.hasTags(acting, Tag.Player)) {
+                    state = LoopState.PLAYER_MOVE;
+                }
+            }
+
+            if (state == LoopState.PLAYER_MOVE) {
+                engine.runSystem(playerMovement);
+
+                if (playerMovement.isDone()) {
+                    engine.removeTag(acting, Tag.Acting);
+                    state = LoopState.NORMAL;
+                }
+            }
+            else {
+                engine.runSystem(aiMovement);
+                engine.removeTag(acting, Tag.Acting);
+            }
         }
+    }
+
+    private enum LoopState {
+        NORMAL, PLAYER_MOVE;
     }
 }
