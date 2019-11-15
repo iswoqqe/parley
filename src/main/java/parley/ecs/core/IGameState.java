@@ -1,5 +1,7 @@
 package parley.ecs.core;
 
+import parley.ecs.components.Tag;
+
 import java.util.Iterator;
 
 /**
@@ -8,9 +10,18 @@ import java.util.Iterator;
 
 public interface IGameState {
     /**
+     * @return an IEntity with the specified id if such an entity exists, otherwise null
+     */
+    IEntity entityWithId(int entityID);
+
+    /**
      * @return an iterator iterating over each entity once
      */
     Iterable<IEntity> all();
 
-    Iterable<IEntity> allWithComponents(Class<? extends IComponent>... componentTypes);
+    /**
+     * @param tags the required tags of all returned entities
+     * @return an iterator iterating over each entity with all specified tags once
+     */
+    Iterable<IEntity> allWithTags(Tag... tags);
 }

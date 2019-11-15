@@ -3,6 +3,8 @@ package parley.systems;
 import asciiPanel.AsciiPanel;
 import parley.ecs.components.PhysicalObject;
 import parley.ecs.core.*;
+import parley.events.GetPositionQuery;
+import parley.events.GetTextureQuery;
 
 import javax.swing.*;
 
@@ -34,20 +36,29 @@ public class UI extends JFrame implements ISystem {
         setVisible(true);
     }
 
-    private boolean canDraw(PhysicalObject object) {
-        return 0 < object.getX() && object.getX() < width
-                && 0 <= object.getY() && object.getY() < height;
+    private boolean canDraw(int x, int y) {
+        return 0 < x && x < width && 0 <= y && y < height;
     }
 
     @Override
     public void run(IGameState entities) {
         terminal.clear();
 
-        for (IEntity entity : entities.allWithComponents(PhysicalObject.class)) {
-            PhysicalObject object = entity.getComponent(PhysicalObject.class);
+        for (IEntity entity : entities.all()) {
+            GetPositionQuery getPositionQuery = new GetPositionQuery();
+            GetTextureQuery getTextureQuery = new GetTextureQuery();
 
-            if (canDraw(object)) {
-                terminal.write(object.getTexture(), object.getX(), object.getY());
+            entity.fireEvent(getPositionQuery);
+            entity.fireEvent(getTextureQuery);
+
+            if (getPositionQuery.foundPosition() && getTextureQuery.foundTexture()) {
+                int x = getPositionQuery.getX();
+                int y = getPositionQuery.getY();
+                char texture = getTextureQuery.getTexture();
+
+                if (canDraw(x, y)) {
+                    terminal.write(texture, x, y);
+                }
             }
         }
 

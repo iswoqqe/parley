@@ -1,44 +1,43 @@
 package parley.ecs.core;
 
+import parley.ecs.components.Tag;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @brief very simple implementation of IGameState
  */
 
 class GameState implements IGameState {
-    private List<IEntity> entities;
+    private Map<Integer, IEntity> entities;
 
     GameState() {
-        this.entities = new ArrayList<>();
+        this.entities = new HashMap<>();
     }
 
     void add(IEntity entity) {
-        entities.add(entity);
+        entities.put(entity.getId(), entity);
     }
 
     @Override
-    public List<IEntity> all() {
-        return entities;
+    public IEntity entityWithId(int entityID) {
+        return entities.get(entityID);
     }
 
     @Override
-    public Iterable<IEntity> allWithComponents(Class<? extends IComponent>... componentTypes) {
+    public Iterable<IEntity> all() {
+        return entities.values();
+    }
+
+    @Override
+    public Iterable<IEntity> allWithTags(Tag... tags) {
         List<IEntity> ret = new ArrayList<>();
 
-        for (IEntity entity : entities) {
-            boolean addEntity = true;
-
-            for (Class<? extends IComponent> type : Arrays.asList(componentTypes)) {
-                if (!entity.hasComponent(type)) {
-                    addEntity = false;
-                    break;
-                }
-            }
-
-            if (addEntity) {
+        for (IEntity entity : entities.values()) {
+            if (entity.hasTags(tags)) {
                 ret.add(entity);
             }
         }

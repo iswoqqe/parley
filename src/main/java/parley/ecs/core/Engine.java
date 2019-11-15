@@ -1,7 +1,8 @@
 package parley.ecs.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import parley.ecs.components.Tag;
+
+import java.util.*;
 
 public class Engine {
     private GameState state;
@@ -22,6 +23,31 @@ public class Engine {
         }
     }
 
+    public boolean hasTags(int entityId, Tag... tags) {
+        synchronized (state) {
+            IEntity entity = state.entityWithId(entityId);
+            return entity != null && entity.hasTags(tags);
+        }
+    }
+
+    public void addTag(int entityId, Tag tag) {
+        synchronized (state) {
+            IEntity entity = state.entityWithId(entityId);
+            if (entity != null) {
+                entity.addTag(tag);
+            }
+        }
+    }
+
+    public void removeTag(int entityId, Tag tag) {
+        synchronized (state) {
+            IEntity entity = state.entityWithId(entityId);
+            if (entity != null) {
+                entity.removeTag(tag);
+            }
+        }
+    }
+
     /**
      * @brief Return a nice interface for creating and inserting entities into the game state.
      * @return a new Engine.EntityBuilder instance connected to this engine instance
@@ -35,14 +61,16 @@ public class Engine {
      */
     public class EntityBuilder {
         private boolean done;
+        private Set<Tag> tags;
         private List<IComponent> components;
 
         EntityBuilder() {
             this.done = false;
+            this.tags = EnumSet.noneOf(Tag.class);
             this.components = new ArrayList<>();
         }
 
-        public EntityBuilder with(IComponent component) {
+        public EntityBuilder withComponent(IComponent component) {
             if (done) {
                 throw new UnsupportedOperationException("build() has already been called in Engine.EntityBuilder");
             }
@@ -50,6 +78,16 @@ public class Engine {
             components.add(component);
             return this;
         }
+
+        public EntityBuilder withTag(Tag tag) {
+            if (done) {
+                throw new UnsupportedOperationException("build() has already been called in Engine.EntityBuilder");
+            }
+
+            tags.add(tag);
+            return this;
+        }
+
 
         public int build() {
             if (done) {
@@ -59,7 +97,7 @@ public class Engine {
             int ret;
 
             synchronized (state) {
-                state.add(new Entity(nextEntityId, components));
+                state.add(new Entity(nextEntityId, components, tags));
                 ret = nextEntityId;
                 nextEntityId += 1;
             }
