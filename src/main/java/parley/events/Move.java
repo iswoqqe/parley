@@ -1,9 +1,8 @@
 package parley.events;
 
 import parley.ecs.components.PhysicalObject;
-import parley.ecs.core.IEntity;
 import parley.ecs.core.IEvent;
-import parley.systems.UI;
+import parley.UI;
 
 public class Move implements IEvent {
     private int destX;

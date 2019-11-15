@@ -1,7 +1,6 @@
-package parley.systems;
+package parley;
 
 import asciiPanel.AsciiPanel;
-import parley.ecs.components.PhysicalObject;
 import parley.ecs.core.*;
 import parley.events.GetPositionQuery;
 import parley.events.GetTextureQuery;

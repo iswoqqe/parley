@@ -8,7 +8,6 @@ import parley.ecs.components.Tag;
 import parley.ecs.core.Engine;
 import parley.systems.AIMovement;
 import parley.systems.PlayerMovement;
-import parley.systems.UI;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
