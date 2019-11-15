@@ -17,6 +17,10 @@ public class GetTextureQuery implements IEvent {
         texture = physicalObject.getTexture();
     }
 
+    public void reset() {
+        found = false;
+    }
+
     public boolean foundTexture() {
         return found;
     }

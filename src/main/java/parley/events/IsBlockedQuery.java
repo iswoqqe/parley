@@ -15,6 +15,10 @@ public class IsBlockedQuery implements IEvent {
         this.blocked = false;
     }
 
+    public void reset() {
+        blocked = false;
+    }
+
     @Override
     public void visit(PhysicalObject physicalObject) {
         if (x == physicalObject.getX() && y == physicalObject.getY()) {

@@ -20,6 +20,10 @@ public class GetPositionQuery implements IEvent {
         y = physicalObject.getY();
     }
 
+    public void reset() {
+        found = false;
+    }
+
     public boolean foundPosition() {
         return found;
     }

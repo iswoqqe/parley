@@ -41,9 +41,12 @@ public class UI extends JFrame implements ISystem {
     public void run(IGameState entities) {
         clear();
 
+        GetPositionQuery getPositionQuery = new GetPositionQuery();
+        GetTextureQuery getTextureQuery = new GetTextureQuery();
+
         for (IEntity entity : entities.all()) {
-            GetPositionQuery getPositionQuery = new GetPositionQuery();
-            GetTextureQuery getTextureQuery = new GetTextureQuery();
+            getPositionQuery.reset();
+            getTextureQuery.reset();
 
             entity.fireEvent(getPositionQuery);
             entity.fireEvent(getTextureQuery);
@@ -59,22 +62,14 @@ public class UI extends JFrame implements ISystem {
             }
         }
 
-        try {
-            SwingUtilities.invokeAndWait(() -> {
-                for (int i = 0; i < width; ++i) {
-                    for (int j = 0; j < height; ++j) {
-                        terminal.write(chars[i][j], i, j);
-                    }
+        SwingUtilities.invokeLater(() -> {
+            for (int i = 0; i < width; ++i) {
+                for (int j = 0; j < height; ++j) {
+                    terminal.write(chars[i][j], i, j);
                 }
+            }
 
-                terminal.repaint();
-            });
-        } catch (InvocationTargetException e) {
-            System.out.println("Closing down UI because of exception:\n" + e.getMessage());
-            return;
-        } catch (InterruptedException e) {
-            System.out.println("Closing down UI because of exception:\n" + e.getMessage());
-            return;
-        }
+            terminal.repaint();
+        });
     }
 }

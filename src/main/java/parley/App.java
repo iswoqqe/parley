@@ -57,6 +57,8 @@ public class App {
         LoopState state = LoopState.NORMAL;
 
         while (true) {
+            long startTime = System.currentTimeMillis();
+
             engine.runSystem(ui);
 
             int acting = turnQueue.peek();
@@ -84,6 +86,9 @@ public class App {
                 engine.runSystem(aiMovement);
                 engine.removeTag(acting, Tag.Acting);
             }
+
+            long sleepTime = Math.max(0, 10 - (System.currentTimeMillis() - startTime));
+            Thread.sleep(sleepTime);
         }
     }
 
