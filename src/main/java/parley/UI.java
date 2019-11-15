@@ -12,7 +12,7 @@ public class UI extends JFrame implements ISystem {
     public static final int height = 43;
     private AsciiPanel terminal;
 
-    public static void start(Engine engine) {
+    static void start(Engine engine) {
         UI uiFrame = new UI();
 
         new Thread(() -> {
@@ -36,7 +36,7 @@ public class UI extends JFrame implements ISystem {
     }
 
     private boolean canDraw(int x, int y) {
-        return 0 < x && x < width && 0 <= y && y < height;
+        return 0 <= x && x < width && 0 <= y && y < height;
     }
 
     @Override
