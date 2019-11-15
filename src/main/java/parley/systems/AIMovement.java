@@ -1,58 +1,44 @@
 package parley.systems;
 
 import parley.ecs.components.AI;
-import parley.ecs.components.IEvent;
 import parley.ecs.components.PhysicalObject;
 import parley.ecs.core.IEntity;
 import parley.ecs.core.IGameState;
 import parley.ecs.core.ISystem;
+import parley.events.IsBlockedQuery;
 import parley.events.Move;
 
 import java.util.Random;
 
-public class AIMovement implements ISystem, IEvent {
+public class AIMovement implements ISystem {
     private Random rng;
 
-    private boolean queriedIsBlocked;
-    private boolean foundPosition;
-    private int queriedX;
-    private int queriedY;
-
     public AIMovement() {
-        this.rng = new Random();
+        this.rng = new Random(this.hashCode());
     }
 
     @Override
     public void run(IGameState entities) {
-        int dx = rng.nextInt(3) - 1;
-        int dy = rng.nextInt(3) - 1;
+        for (IEntity ai : entities.allWithComponents(AI.class, PhysicalObject.class)) {
+            PhysicalObject object = ai.getComponent(PhysicalObject.class);
 
-        for (IEntity ai : entities.allWithComponents(AI.class)) {
-            ai.fireEvent(this);
-            int x = queriedX + dx;
-            int y = queriedY + dy;
+            int dx = rng.nextInt(3) - 1;
+            int dy = rng.nextInt(3) - 1;
+
+            int destX = object.getX() + dx;
+            int destY = object.getY() + dy;
 
 
             for (IEntity entity : entities.all()) {
-                foundPosition = false;
-                queriedIsBlocked = false;
+                IsBlockedQuery isBlockedQuery = new IsBlockedQuery(destX, destY);
+                entity.fireEvent(isBlockedQuery);
 
-                entity.fireEvent(this);
-
-                if (foundPosition && x == queriedX && y == queriedY && queriedIsBlocked) {
+                if (isBlockedQuery.result()) {
                     return;
                 }
             }
 
-            ai.fireEvent(new Move(x, y));
+            ai.fireEvent(new Move(destX, destY));
         }
-    }
-
-    @Override
-    public void visit(PhysicalObject physicalObject, IEntity self) {
-        this.queriedX = physicalObject.getX();
-        this.queriedY = physicalObject.getY();
-        this.queriedIsBlocked = true;
-        this.foundPosition = true;
     }
 }

@@ -1,22 +1,17 @@
 package parley.systems;
 
-import parley.ecs.components.Player;
 import parley.ecs.components.PhysicalObject;
+import parley.ecs.components.Player;
 import parley.ecs.core.IEntity;
-import parley.ecs.components.IEvent;
 import parley.ecs.core.IGameState;
 import parley.ecs.core.ISystem;
+import parley.events.IsBlockedQuery;
 import parley.events.Move;
 import parley.Inputs;
 
 import java.awt.event.KeyEvent;
 
-public class PlayerMovement implements ISystem, IEvent {
-    private boolean queriedIsBlocked;
-    private boolean foundPosition;
-    private int queriedX;
-    private int queriedY;
-
+public class PlayerMovement implements ISystem {
     public PlayerMovement() {
     }
 
@@ -31,33 +26,23 @@ public class PlayerMovement implements ISystem, IEvent {
         int dx = getDX(dir);
         int dy = getDY(dir);
 
-        for (IEntity player : entities.allWithComponents(Player.class)) {
-            player.fireEvent(this);
-            int x = queriedX + dx;
-            int y = queriedY + dy;
+        for (IEntity player : entities.allWithComponents(Player.class, PhysicalObject.class)) {
+            PhysicalObject object = player.getComponent(PhysicalObject.class);
 
+            int destX = object.getX() + dx;
+            int destY = object.getY() + dy;
 
             for (IEntity entity : entities.all()) {
-                foundPosition = false;
-                queriedIsBlocked = false;
+                IsBlockedQuery isBlockedQuery = new IsBlockedQuery(destX, destY);
+                entity.fireEvent(isBlockedQuery);
 
-                entity.fireEvent(this);
-
-                if (foundPosition && x == queriedX && y == queriedY && queriedIsBlocked) {
+                if (isBlockedQuery.result()) {
                     return;
                 }
             }
 
-            player.fireEvent(new Move(x, y));
+            player.fireEvent(new Move(destX, destY));
         }
-    }
-
-    @Override
-    public void visit(PhysicalObject physicalObject, IEntity self) {
-        this.queriedX = physicalObject.getX();
-        this.queriedY = physicalObject.getY();
-        this.queriedIsBlocked = true;
-        this.foundPosition = true;
     }
 
     private int getDX(Dir dir) {

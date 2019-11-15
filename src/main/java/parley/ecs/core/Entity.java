@@ -31,4 +31,15 @@ public class Entity implements IEntity {
         }
         return false;
     }
+
+    @Override
+    public <T extends IComponent> T getComponent(Class<T> type) {
+        for (IComponent component : components) {
+            if (component.getClass().equals(type)) {
+                return (T) component;
+            }
+        }
+
+        return null;
+    }
 }
