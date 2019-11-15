@@ -5,6 +5,7 @@ import parley.ecs.components.PhysicalObject;
 import parley.ecs.core.IEntity;
 import parley.ecs.core.IGameState;
 import parley.ecs.core.ISystem;
+import parley.events.GetPositionQuery;
 import parley.events.IsBlockedQuery;
 import parley.events.Move;
 
@@ -19,14 +20,19 @@ public class AIMovement implements ISystem {
 
     @Override
     public void run(IGameState entities) {
-        for (IEntity ai : entities.allWithComponents(AI.class, PhysicalObject.class)) {
-            PhysicalObject object = ai.getComponent(PhysicalObject.class);
+        for (IEntity ai : entities.allWithComponents(AI.class)) {
+            GetPositionQuery getPositionQuery = new GetPositionQuery();
+            ai.fireEvent(getPositionQuery);
+
+            if (!getPositionQuery.foundPosition()) {
+                continue;
+            }
 
             int dx = rng.nextInt(3) - 1;
             int dy = rng.nextInt(3) - 1;
 
-            int destX = object.getX() + dx;
-            int destY = object.getY() + dy;
+            int destX = getPositionQuery.getX() + dx;
+            int destY = getPositionQuery.getY() + dy;
 
 
             for (IEntity entity : entities.all()) {

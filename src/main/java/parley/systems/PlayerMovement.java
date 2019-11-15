@@ -5,6 +5,7 @@ import parley.ecs.components.Player;
 import parley.ecs.core.IEntity;
 import parley.ecs.core.IGameState;
 import parley.ecs.core.ISystem;
+import parley.events.GetPositionQuery;
 import parley.events.IsBlockedQuery;
 import parley.events.Move;
 import parley.Inputs;
@@ -26,11 +27,16 @@ public class PlayerMovement implements ISystem {
         int dx = getDX(dir);
         int dy = getDY(dir);
 
-        for (IEntity player : entities.allWithComponents(Player.class, PhysicalObject.class)) {
-            PhysicalObject object = player.getComponent(PhysicalObject.class);
+        for (IEntity player : entities.allWithComponents(Player.class)) {
+            GetPositionQuery getPositionQuery = new GetPositionQuery();
+            player.fireEvent(getPositionQuery);
 
-            int destX = object.getX() + dx;
-            int destY = object.getY() + dy;
+            if (!getPositionQuery.foundPosition()) {
+                continue;
+            }
+
+            int destX = getPositionQuery.getX() + dx;
+            int destY = getPositionQuery.getY() + dy;
 
             for (IEntity entity : entities.all()) {
                 IsBlockedQuery isBlockedQuery = new IsBlockedQuery(destX, destY);
