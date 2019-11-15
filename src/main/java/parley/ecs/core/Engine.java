@@ -5,9 +5,11 @@ import java.util.List;
 
 public class Engine {
     private GameState state;
+    private int nextEntityId;
 
     public Engine() {
         this.state = new GameState();
+        this.nextEntityId = 0;
     }
 
     /**
@@ -25,20 +27,18 @@ public class Engine {
      * @return a new Engine.EntityBuilder instance connected to this engine instance
      */
     public EntityBuilder newEntity() {
-        return new EntityBuilder(state);
+        return new EntityBuilder();
     }
 
     /**
      * @brief A nice interface for creating and inserting entities into the game state.
      */
-    public static class EntityBuilder {
+    public class EntityBuilder {
         private boolean done;
         private List<IComponent> components;
-        private GameState state;
 
-        EntityBuilder(GameState state) {
+        EntityBuilder() {
             this.done = false;
-            this.state = state;
             this.components = new ArrayList<>();
         }
 
@@ -51,20 +51,23 @@ public class Engine {
             return this;
         }
 
-        public void build() {
+        public int build() {
             if (done) {
                 throw new UnsupportedOperationException("build() has already been called in Engine.EntityBuilder");
             }
 
-            System.out.println(components);
+            int ret;
 
             synchronized (state) {
-                state.add(new Entity(components));
+                state.add(new Entity(nextEntityId, components));
+                ret = nextEntityId;
+                nextEntityId += 1;
             }
 
-            state = null;
             components = null;
             done = true;
+
+            return ret;
         }
     }
 }

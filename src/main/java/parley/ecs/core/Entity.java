@@ -7,9 +7,11 @@ import java.util.List;
  */
 
 public class Entity implements IEntity {
+    private int id;
     private List<IComponent> components;
 
-    Entity(List<IComponent> components) {
+    public Entity(int id, List<IComponent> components) {
+        this.id = id;
         this.components = components;
     }
 
@@ -39,5 +41,10 @@ public class Entity implements IEntity {
         }
 
         return null;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }
