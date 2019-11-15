@@ -2,7 +2,7 @@ package parley.events;
 
 import parley.ecs.components.PhysicalObject;
 import parley.ecs.core.IEntity;
-import parley.ecs.components.IEvent;
+import parley.ecs.core.IEvent;
 import parley.systems.UI;
 
 public class Move implements IEvent {
@@ -15,7 +15,7 @@ public class Move implements IEvent {
     }
 
     @Override
-    public void visit(PhysicalObject physicalObject, IEntity self) {
+    public void visit(PhysicalObject physicalObject) {
         physicalObject.setX(destX);
         physicalObject.setY(destY);
     }

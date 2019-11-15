@@ -1,8 +1,8 @@
 package parley.events;
 
-import parley.ecs.components.IEvent;
 import parley.ecs.components.PhysicalObject;
 import parley.ecs.core.IEntity;
+import parley.ecs.core.IEvent;
 
 public class GetPositionQuery implements IEvent {
     private boolean found;
@@ -14,7 +14,7 @@ public class GetPositionQuery implements IEvent {
     }
 
     @Override
-    public void visit(PhysicalObject physicalObject, IEntity self) {
+    public void visit(PhysicalObject physicalObject) {
         found = true;
         x = physicalObject.getX();
         y = physicalObject.getY();

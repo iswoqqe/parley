@@ -1,8 +1,8 @@
 package parley.events;
 
-import parley.ecs.components.IEvent;
 import parley.ecs.components.PhysicalObject;
 import parley.ecs.core.IEntity;
+import parley.ecs.core.IEvent;
 
 public class IsBlockedQuery implements IEvent {
     private boolean blocked;
@@ -16,7 +16,7 @@ public class IsBlockedQuery implements IEvent {
     }
 
     @Override
-    public void visit(PhysicalObject physicalObject, IEntity self) {
+    public void visit(PhysicalObject physicalObject) {
         if (x == physicalObject.getX() && y == physicalObject.getY()) {
             blocked = true;
         }
