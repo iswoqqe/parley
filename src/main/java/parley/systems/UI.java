@@ -9,8 +9,8 @@ import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 
 public class UI extends JFrame implements ISystem {
-    public static final int width = 80;
-    public static final int height = 43;
+    public static final int width = 200;
+    public static final int height = 60;
     private char[][] chars;
     private AsciiPanel terminal;
 

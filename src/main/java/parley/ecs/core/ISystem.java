@@ -1,7 +1,8 @@
 package parley.ecs.core;
 
 /**
- * @brief A system processes the current game state.
+ * @brief A system is a concrete subsystem of the game logic, such as a game mechanic.
+ *
  */
 
 public interface ISystem {

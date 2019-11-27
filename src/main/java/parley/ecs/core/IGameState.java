@@ -5,7 +5,7 @@ import parley.ecs.components.Tag;
 import java.util.Iterator;
 
 /**
- * @brief interface for the entity storage in the engine.
+ * @brief A game state is a collection of entities.
  */
 
 public interface IGameState {
