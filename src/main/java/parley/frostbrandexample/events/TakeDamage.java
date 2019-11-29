@@ -17,6 +17,9 @@ public class TakeDamage implements IEvent {
     public void visit(Health health) {
         for (AttackModifier modifier : modifiers) {
             health.takeDamage(modifier.getDamage());
+            System.out.println("Damaged by: " + modifier);
         }
+
+        System.out.println("Health is now: " + health.getHealth());
     }
 }

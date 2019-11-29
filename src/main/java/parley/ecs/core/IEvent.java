@@ -9,4 +9,13 @@ import parley.ecs.components.IComponentVisitor;
  */
 
 public interface IEvent extends IComponentVisitor {
+    /**
+     * @brief will be ran before visiting any components.
+     */
+    default void preHook() {}
+
+    /**
+     * @brief will be ran after visiting any components.
+     */
+    default void postHook() {}
 }

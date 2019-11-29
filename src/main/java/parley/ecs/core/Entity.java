@@ -24,9 +24,13 @@ public class Entity implements IEntity {
 
     @Override
     public void fireEvent(IEvent event) {
+        event.preHook();
+
         for (IComponent component : components) {
             component.accept(event);
         }
+
+        event.postHook();
     }
 
     @Override

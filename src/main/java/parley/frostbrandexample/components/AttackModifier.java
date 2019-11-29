@@ -28,4 +28,12 @@ public class AttackModifier implements IComponent {
     public enum Type {
         Fire, Ice, Slashing, Piercing, Bludgeoning
     }
+
+    @Override
+    public String toString() {
+        return "AttackModifier{" +
+                "damage=" + damage +
+                ", type=" + type +
+                '}';
+    }
 }
